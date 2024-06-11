@@ -3,7 +3,6 @@ import asyncHandler       from 'express-async-handler';
 
 export const register = asyncHandler(async(req, res) => {
     const body = req.body;
-
     await userServices.register(body, res);
    
 }); 
