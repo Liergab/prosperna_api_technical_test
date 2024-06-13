@@ -117,7 +117,7 @@ export const getUserById = async(id, req, res) => {
 
 export const deleteUser = async (id, req, res) => {
     
-    const requestingUserId = req.user?._id.toString();
+   
     if(req.user?.isAdmin === true){
         const user = await USER_MODEL.findByIdAndDelete(id)
 
@@ -151,13 +151,12 @@ export const updateUser = async(id,body,req, res) => {
     }
 
     if (!email && !password && !password_confirmation) {
-        res.status(400).json({ message: "No fields to update!" });
-        return;
+        res.status(400)
+        throw new Error("No fields to update!" );   
     }
     if (password !== password_confirmation) {
         res.status(400)
-        throw new Error("Password and password confirmation do not match!");
-        return;
+        throw new Error("Password and password confirmation do not match!"); 
     }
 
     let hashedPassword;
