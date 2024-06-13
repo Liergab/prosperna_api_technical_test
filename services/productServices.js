@@ -77,14 +77,21 @@ export const getProductById = async(id,res) => {
 export const deleteProduct = async(id,req,res) => {
 
    
-    const product = await PRODUCT_MODEL.findByIdAndDelete(id)
+    const product = await PRODUCT_MODEL.findById(id);
+
+    if (!product) {
+        res.status(404);
+        throw new Error('Product not found!');
+    }
 
     if (product.user.toString() !== req.user.id) {
         res.status(403);
-        throw new Error("Only the owner can delete this product");
+        throw new Error('Only the owner can delete this product');
     }
 
-    res.status(200).json({message:"Product Deleted!"})
+    await PRODUCT_MODEL.findByIdAndDelete(id);
+
+    res.status(200).json({ message: 'Product Deleted!' });
   
 }
 
@@ -97,9 +104,8 @@ export const deleteProduct = async(id,req,res) => {
 */
 
 
-export const updateProduct = async(id, body, req,res) => {
-
-    const{product_name, product_description, product_price, product_tag } = body
+export const updateProduct = async (id, body, req, res) => {
+    const { product_name, product_description, product_price, product_tag } = body;
 
     const product = await PRODUCT_MODEL.findById(id);
 
@@ -108,7 +114,6 @@ export const updateProduct = async(id, body, req,res) => {
         throw new Error('Product not found');
     }
 
-    
     if (product.user.toString() !== req.user.id) {
         res.status(403);
         throw new Error("Only the owner can update this product");
@@ -120,22 +125,20 @@ export const updateProduct = async(id, body, req,res) => {
     }
 
     const updateFields = {
-      product_name,
-      product_description,
-      product_price,
-      product_tag
+        product_name,
+        product_description,
+        product_price,
+        product_tag
     };
 
-    const updateProduct = await PRODUCT_MODEL.findByIdAndUpdate(id, { $set: updateFields }, { new: true })
+    const updatedProduct = await PRODUCT_MODEL.findByIdAndUpdate(id, { $set: updateFields }, { new: true });
 
     return res.status(200).json({
-        _id                 : updateProduct.id,
-        product_name        : updateProduct.product_name,
-        product_description :updateProduct.product_description,
-        product_price       : updateProduct.product_price,
-        product_tag         : updateProduct.product_tag,
-        updatedAt           :updateProduct.updatedAt
+        _id: updatedProduct._id,
+        product_name: updatedProduct.product_name,
+        product_description: updatedProduct.product_description,
+        product_price: updatedProduct.product_price,
+        product_tag: updatedProduct.product_tag,
+        updatedAt: updatedProduct.updatedAt
     });
-    
-    
-}
+};
